@@ -2,14 +2,15 @@
 '''
 Module Adaura_4Chan_Attenuator_USB
 =================================
-This module is responsible for communicating the Adaura 4 Channel USB Attenuator
+This module is responsible for communicating the Adaura 4 Channel USB Attenuator. 
+As of this writing there is no way to ask what the current attenuation value is
+set to. 
 '''
 # System level imports
 import serial
 import time
 
 # local imports
-
 
 class Adaura_4Chan_Attenuator_USB:
     def __init__(self, port=''):
@@ -22,6 +23,7 @@ class Adaura_4Chan_Attenuator_USB:
         self._ret_str = ''
         self._read_delay_s = 0.001
         self.device_info = ''
+        self._attenuation_resolution = 0.25
         
     def _write(self, str_in: str):
         if(self.debug):
@@ -53,14 +55,24 @@ class Adaura_4Chan_Attenuator_USB:
             print(self.device_info)
 
     def set_atten(self, chan, atten_dB):
-        #TODO: Check that it is a valid Channel
-        #TODO: Check that the requested attenuation is a modulo 0.25 dB
+        if(chan < 1):
+            print("Invalid channel number, must be 1, 2, 3, 4")
+            return
+        if(chan > 4):
+            print("Invalid channel number, must be 1, 2, 3, 4")
+            return
+        
+        if((atten_dB % self._attenuation_resolution) != 0.0):
+            print("Requested attenuation must be modulo {}".format(str(self._attenuation_resolution)))
+
         self._write("SET {} {}".format(chan, atten_dB))
         #TODO: Parse Return string and see if the command was valid
         return
 
     def set_all_atten(self, atten_dB):
-        #TODO: Check that the requested attenuation is a modulo 0.25 dB
+        if((atten_dB % self._attenuation_resolution) != 0.0):
+            print("Requested attenuation must be modulo {}".format(str(self._attenuation_resolution)))
+
         self._write("SAA {}".format(atten_dB))
         #TODO: Parse Return string and see if the command was valid
         return
