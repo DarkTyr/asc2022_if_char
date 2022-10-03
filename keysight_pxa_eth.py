@@ -7,6 +7,7 @@ Ethernet using the pyvisa infrastructure.
 '''
 # System level imports
 import pyvisa
+import numpy as np
 
 # local imports
 
@@ -108,7 +109,8 @@ class Keysight_PXA_Eth:
     def getData(self, trace):
         self.pxa.write("CALC{}:DATA? SDATA".format(str(trace)))
         self._ret_data = self.pxa.read()
-        return self._ret_data
+        data = np.array(self._ret_data.split(',')).astype(float)
+        return data
 
     def triggerSweep(self):
         '''Trigger a sweep, this is a blocking command'''
@@ -119,20 +121,21 @@ class Keysight_PXA_Eth:
         self.pxa.query("SYST:PRES; *OPC?") 
 
     def setAverageOn(self):
-        # :SENS1:AVER ON'
+        self.pxa.write(":SENS1:AVER ON")
         pass
 
     def setAverageOff(self):
-        # :SENS1:AVER OFF'
+        self.pxa.write(":SENS1:AVER OFF")
         pass
 
     def setNumberAverages(self, num_averages):
-        # :SENS1:AVER:COUN {}.format(int())
+        self.pxa.write(":SENS1:AVER:COUN {}".format(int(num_averages)))
         pass
 
     def getNumberAverages(self):
-        pass
-
+        self._ret_str = self.pxa.query(":SENS1:AVER:COUN?")
+        return int(self._ret_str)
+        
     def setIFBandwidth(self, bandwidth_Hz):
         pass
 
@@ -141,19 +144,21 @@ class Keysight_PXA_Eth:
 
     ''' Marker Control Methods'''
     def setMarkerOn(self, N):
-        self.pxa.write(':CALC1:MARK%d ON' % (N))
+        self.pxa.write(":CALCulate:MARKer{}:MODE POS".format(int(N)))
 
     def setMarkOff(self, N):
-        self.pxa.write(':CALC1:MARK%d OFF' % (N))
+        self.pxa.write(":CALCulate:MARKer{}:MODE OFF".format(int(N)))
 
     def setMarkFreq_Hz(self, N, marker_Hz):
-        pass
+        self.pxa.write("CALCulate:MARKer{}:X {}".format(int(N), str(marker_Hz)))
 
     def getMarkFreq_Hz(self, N):
-        pass
+        self._ret_str = self.pxa.query("CALCulate:MARKer{}:X?".format(int(N)))
+        return float(self._ret_str)
 
     def getMarkPower(self, N):
-        pass
+        self._ret_Str = self.pxa.query(":CALCulate:MARKer{}:Y?".format(int(N)))
+        return float(self._ret_str)
 
     def setCalibrateInstrument(self):
         '''Should block until done'''
@@ -162,3 +167,9 @@ class Keysight_PXA_Eth:
     def getCalibrationInstrument(self):
         ''' Does the instrument need to be calibrated?'''
         pass
+
+    def setMarkMax(self, mark_num):
+        self.pxa.write(":CALC:MARK{}:MAX".format(int(mark_num)))
+
+    def setMarkNextMax(self, mark_num):
+        self.pxa.write(":CALC:MARK{}:MAX:NEXT".format(int(mark_num)))
