@@ -21,23 +21,35 @@ class Keysight_ENA_Eth:
         self._ret_data = ''
         self.IDN = ''
         self._termination = '\n'
+        self.debug = False
 
     def _write(self, str_in: str):
-        self.ena.write(str_in)
+        self._sent_str = str_in
+        if(self.debug):
+            print("Keysight_ENA_Eth._write(): {}".format(self._sent_str))
+        self.ena.write(self._sent_str)
         
     def _read(self) -> str:
-        return self.ena.read()
-
-    def _query(self, str_in: str):
-        self._ret_str = self.ena.query(str_in)
+        self._ret_str = self.ena.read()
+        if(self.debug):
+            print("Keysight_ENA_Eth._read(): {}".format(self._sent_str))
         return self._ret_str
+
+    def _query(self, str_in:str) -> str:
+        self._sent_str = str_in
+        if(self.debug):
+            print("Keysight_ENA_Eth._query():")
+            print("  {}".format(str(self._sent_str)))
+        self._ret_str = self.ena.query(self._sent_str)
+        if(self.debug):
+            print("  {}".format(str(self._ret_str)))
     
     def open(self):
         self.ena = self.rm.open_resource(self.resource_name)
         self.ena.write_termination = self._termination
         self.ena.read_termination = self._termination
         self.ena.write("*CLS")
-        self.IDN = self.ena.query("*IDN?")
+        self.IDN = self._query("*IDN?")
 
     def close(self):
         self.ena.close()
@@ -55,67 +67,67 @@ class Keysight_ENA_Eth:
         return data
 
     def getCenterFrequency_Hz(self) -> float:
-        self._ret_str = self.ena.query(":SENS:FREQ:CENT?")
+        self._ret_str = self._query(":SENS:FREQ:CENT?")
         return (float(self._ret_str))
 
     def getCenterFrequency_MHz(self) -> float:
-        self._ret_str = self.ena.query(":SENS:FREQ:CENT?")
+        self._ret_str = self._query(":SENS:FREQ:CENT?")
         return (float(self._ret_str)/1e6)
 
     def getCenterFreqneucy_GHz(self) -> float:
-        self._ret_str = self.ena.query(":SENS:FREQ:CENT?")
+        self._ret_str = self._query(":SENS:FREQ:CENT?")
         return (float(self._ret_str)/1e9)
 
     def setCenterFrequency_Hz(self, center_Hz):
-        self.ena.write(":SENS:FREQ:CENT {}".format(str(center_Hz)))
+        self._write(":SENS:FREQ:CENT {}".format(str(center_Hz)))
 
     def setCenterFrequency_MHz(self, center_MHz):
-        self.ena.write(":SENS:FREQ:CENT {}".format(str(center_MHz*1e6)))
+        self._write(":SENS:FREQ:CENT {}".format(str(center_MHz*1e6)))
 
     def setCenterFreqneucy_GHz(self, center_GHz):
-        self.ena.write(":SENS:FREQ:CENT {}".format(str(center_GHz*1e9)))
+        self._write(":SENS:FREQ:CENT {}".format(str(center_GHz*1e9)))
 
     def getSpanFrequency_Hz(self) -> float:
-        self._ret_str = self.ena.query(":SENS:FREQ:SPAN?")
+        self._ret_str = self._query(":SENS:FREQ:SPAN?")
         return (float(self._ret_str))
     
     def getSpanFrequency_MHz(self) -> float:
-        self._ret_str = self.ena.query(":SENS:FREQ:SPAN?")
+        self._ret_str = self._query(":SENS:FREQ:SPAN?")
         return (float(self._ret_str)/1e6)
 
     def getSpanFrequency_GHz(self) -> float:
-        self._ret_str = self.ena.query(":SENS:FREQ:SPAN?")
+        self._ret_str = self._query(":SENS:FREQ:SPAN?")
         return (float(self._ret_str)/1e9)
 
     def setSpanFrequency_Hz(self, Span_Hz):
-        self.ena.write(":SENS:FREQ:SPAN {}".format(str(Span_Hz)))
+        self._write(":SENS:FREQ:SPAN {}".format(str(Span_Hz)))
 
     def setSpanFrequency_MHz(self, Span_MHz):
-        self.ena.write(":SENS:FREQ:SPAN {}".format(str(Span_MHz*1e6)))
+        self._write(":SENS:FREQ:SPAN {}".format(str(Span_MHz*1e6)))
 
     def setSpanFrequency_GHz(self, Span_GHz):
-        self.ena.write(":SENS:FREQ:SPAN {}".format(str(Span_GHz*1e9)))
+        self._write(":SENS:FREQ:SPAN {}".format(str(Span_GHz*1e9)))
 
     def getStartFrequency_Hz(self) -> float:
-        self._ret_str = self.ena.query(":SENS:FREQ:STAR?")
+        self._ret_str = self._query(":SENS:FREQ:STAR?")
         return (float(self._ret_str))
     
     def setStartFrequnecy_Hz(self, start_Hz):
-        self.ena.write(":SENS:FREQ:START {}".format(str(start_Hz)))
+        self._write(":SENS:FREQ:START {}".format(str(start_Hz)))
 
     def getStopFrequency_Hz(self) -> float:
-        self._ret_str = self.ena.query(":SENS:FREQ:STOP?")
+        self._ret_str = self._query(":SENS:FREQ:STOP?")
         return(float(self._ret_str))
 
     def setStopFrequency_Hz(self, stop_Hz):
-        self.ena.write(":SENS:FREQ:STOP {}".format(str(stop_Hz)))
+        self._write(":SENS:FREQ:STOP {}".format(str(stop_Hz)))
         
     def getNumberPoints(self) -> int:
-        self._ret_str = self.ena.query(":SENS:SWE:POINTS?")
+        self._ret_str = self._query(":SENS:SWE:POINTS?")
         return int(self._ret_str)
 
     def setNumberPoints(self, nPoints:int):
-        self.ena.write(":SENS:SWE:POINTS {}".format(str(nPoints)))
+        self._write(":SENS:SWE:POINTS {}".format(str(nPoints)))
 
     def getData(self, trace):
         '''This will return the raw data in Real + Imaginary'''
@@ -136,7 +148,7 @@ class Keysight_ENA_Eth:
 
     def triggerSweep(self):
         '''Trigger a sweep, this is a blocking command'''
-        self.ena.query("SENS:SWE:MODE SING; *OPC?")
+        self._query("SENS:SWE:MODE SING; *OPC?")
 
     def triggerSweepAverage(self):
         '''This reads back the number of averages set and then single triggers that many times'''
@@ -146,25 +158,25 @@ class Keysight_ENA_Eth:
 
     def setPresetInstrument(self):
         ''' Set the instrument to the power on preset'''
-        self.ena.query("SYST:PRES; *OPC?") 
+        self._query("SYST:PRES; *OPC?") 
 
     def setAverageReset(self):
         self._write(":SENS1:AVER:CLE")
 
     def setAverageOn(self):
-        self.ena.write(":SENS1:AVER ON")
+        self._write(":SENS1:AVER ON")
         pass
 
     def setAverageOff(self):
-        self.ena.write(":SENS1:AVER OFF")
+        self._write(":SENS1:AVER OFF")
         pass
 
     def setNumberAverages(self, num_averages:int):
-        self.ena.write(":SENS1:AVER:COUN {}".format(int(num_averages)))
+        self._write(":SENS1:AVER:COUN {}".format(int(num_averages)))
         pass
 
     def getNumberAverages(self) -> int:
-        self._ret_str = self.ena.query(":SENS1:AVER:COUN?")
+        self._ret_str = self._query(":SENS1:AVER:COUN?")
         return int(self._ret_str)
         
     def setIFBandwidth(self, bandwidth_Hz):
@@ -175,27 +187,27 @@ class Keysight_ENA_Eth:
 
     ''' Marker Control Methods'''
     def setMarkerOn(self, N):
-        self.ena.write(":CALCulate:MARKer{}:MODE POS".format(int(N)))
+        self._write(":CALCulate:MARKer{}:MODE POS".format(int(N)))
 
     def setMarkOff(self, N):
-        self.ena.write(":CALCulate:MARKer{}:MODE OFF".format(int(N)))
+        self._write(":CALCulate:MARKer{}:MODE OFF".format(int(N)))
 
     def setMarkFreq_Hz(self, N, marker_Hz):
-        self.ena.write("CALCulate:MARKer{}:X {}".format(int(N), str(marker_Hz)))
+        self._write("CALCulate:MARKer{}:X {}".format(int(N), str(marker_Hz)))
 
     def getMarkFreq_Hz(self, N) -> float:
-        self._ret_str = self.ena.query("CALCulate:MARKer{}:X?".format(int(N)))
+        self._ret_str = self._query("CALCulate:MARKer{}:X?".format(int(N)))
         return float(self._ret_str)
 
     def getMarkPower(self, N) -> float:
-        self._ret_str = self.ena.query(":CALCulate:MARKer{}:Y?".format(int(N)))
+        self._ret_str = self._query(":CALCulate:MARKer{}:Y?".format(int(N)))
         return float(self._ret_str)
 
     def setMarkMax(self, mark_num):
-        self.ena.write(":CALC:MARK{}:MAX".format(int(mark_num)))
+        self._write(":CALC:MARK{}:MAX".format(int(mark_num)))
 
     def setMarkNextMax(self, mark_num):
-        self.ena.write(":CALC:MARK{}:MAX:NEXT".format(int(mark_num)))
+        self._write(":CALC:MARK{}:MAX:NEXT".format(int(mark_num)))
 
     def setPower(self, pwr_dBm):
         pass
