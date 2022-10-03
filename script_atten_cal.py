@@ -1,9 +1,17 @@
 # -*- coding: utf-8 -*-
 '''
-Module Keysight_PXA_Eth
+Script Attenuator Calibration
 =================================
-This module is responsible for communicating with the Keysight PXA Signal Analyzer over
-Ethernet using the pyvisa infrastructure. 
+This script uses the Adaura digital attenuator and ENA to generate calibration data for the attenuator. 
+It is expected that a decent four port calibration using an ECal module on the ENA has been performed
+and is active. This removes systematics from the cabling and generates a far better calibration data.
+
+The saved data is a frequency array (which gives an index for frequency), a list of calable attenuations
+(which gives you an index for programed attenuation) and then what the actuall attenuation was. 
+
+Now theroetically one could work backwards, knowing the frequency, and desired attenuation to figure
+out the closest attenuator value setting to achieve the desired attenuation. We aren't doing any of these
+calculations here.
 '''
 # System level imports
 import pyvisa
@@ -21,7 +29,7 @@ ENA_IP = "192.168.0.15"
 ATTEN_START = 0.0
 ATTEN_STOP = 50
 ATTEN_STEP_SIZE = 0.25
-FREQ_INDEX_START = 1111
+FREQ_INDEX_START = 1111 # Used for plotting
 
 rm = pyvisa.ResourceManager()
 ena = keysight_ena_eth.Keysight_ENA_Eth(rm, resource_name="TCPIP::{}::inst0::INSTR".format(ENA_IP))
