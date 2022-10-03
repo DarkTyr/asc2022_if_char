@@ -22,14 +22,15 @@ class Keysight_PXA_Eth:
         self.IDN = ''
         self._termination = '\n'
         self.debug = False
+
     def _write(self, str_in: str):
         self._sent_str = str_in
         if(self.debug):
             print("Keysight_PXA_Eth._write(): {}".format(self._sent_str))
-        self._write(self._sent_str)
+        self.pxa.write(self._sent_str)
         
     def _read(self) -> str:
-        self._ret_str = self._read()
+        self._ret_str = self.pxa.read()
         if(self.debug):
             print("Keysight_PXA_Eth._read(): {}".format(self._sent_str))
         return self._ret_str
@@ -37,9 +38,9 @@ class Keysight_PXA_Eth:
     def _query(self, str_in:str) -> str:
         self._sent_str = str_in
         if(self.debug):
-            print("Keysight_PXA_Eth._query()")
+            print("Keysight_PXA_Eth._query():")
             print("  {}".format(str(self._sent_str)))
-        self._ret_str = self._query(self._sent_str)
+        self._ret_str = self.pxa.query(self._sent_str)
         if(self.debug):
             print("  {}".format(str(self._ret_str)))
     
