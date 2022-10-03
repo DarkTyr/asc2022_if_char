@@ -49,7 +49,7 @@ class Keysight_ENA_Eth:
         else:
             return self.IDN
 
-    def getXValues_Hz(self) -> np.array:
+    def getXValues_Hz(self) -> np.array(float):
         self._query(":CALCulate:MEASure:X:ValUES?")
         data = np.array(self._ret_str.split(",")).astype(float)
         return data
@@ -58,11 +58,11 @@ class Keysight_ENA_Eth:
         self._ret_str = self.ena.query(":SENS:FREQ:CENT?")
         return (float(self._ret_str))
 
-    def getCenterFrequency_MHz(self):
+    def getCenterFrequency_MHz(self) -> float:
         self._ret_str = self.ena.query(":SENS:FREQ:CENT?")
         return (float(self._ret_str)/1e6)
 
-    def getCenterFreqneucy_GHz(self):
+    def getCenterFreqneucy_GHz(self) -> float:
         self._ret_str = self.ena.query(":SENS:FREQ:CENT?")
         return (float(self._ret_str)/1e9)
 
@@ -75,15 +75,15 @@ class Keysight_ENA_Eth:
     def setCenterFreqneucy_GHz(self, center_GHz):
         self.ena.write(":SENS:FREQ:CENT {}".format(str(center_GHz*1e9)))
 
-    def getSpanFrequency_Hz(self):
+    def getSpanFrequency_Hz(self) -> float:
         self._ret_str = self.ena.query(":SENS:FREQ:SPAN?")
         return (float(self._ret_str))
     
-    def getSpanFrequency_MHz(self):
+    def getSpanFrequency_MHz(self) -> float:
         self._ret_str = self.ena.query(":SENS:FREQ:SPAN?")
         return (float(self._ret_str)/1e6)
 
-    def getSpanFrequency_GHz(self):
+    def getSpanFrequency_GHz(self) -> float:
         self._ret_str = self.ena.query(":SENS:FREQ:SPAN?")
         return (float(self._ret_str)/1e9)
 
@@ -96,25 +96,25 @@ class Keysight_ENA_Eth:
     def setSpanFrequency_GHz(self, Span_GHz):
         self.ena.write(":SENS:FREQ:SPAN {}".format(str(Span_GHz*1e9)))
 
-    def getStartFrequency_Hz(self):
+    def getStartFrequency_Hz(self) -> float:
         self._ret_str = self.ena.query(":SENS:FREQ:STAR?")
         return (float(self._ret_str))
     
     def setStartFrequnecy_Hz(self, start_Hz):
         self.ena.write(":SENS:FREQ:START {}".format(str(start_Hz)))
 
-    def getStopFrequency_Hz(self):
+    def getStopFrequency_Hz(self) -> float:
         self._ret_str = self.ena.query(":SENS:FREQ:STOP?")
         return(float(self._ret_str))
 
     def setStopFrequency_Hz(self, stop_Hz):
         self.ena.write(":SENS:FREQ:STOP {}".format(str(stop_Hz)))
         
-    def getNumberPoints(self):
+    def getNumberPoints(self) -> int:
         self._ret_str = self.ena.query(":SENS:SWE:POINTS?")
         return int(self._ret_str)
 
-    def setNumberPoints(self, nPoints):
+    def setNumberPoints(self, nPoints:int):
         self.ena.write(":SENS:SWE:POINTS {}".format(str(nPoints)))
 
     def getData(self, trace):
@@ -159,18 +159,18 @@ class Keysight_ENA_Eth:
         self.ena.write(":SENS1:AVER OFF")
         pass
 
-    def setNumberAverages(self, num_averages):
+    def setNumberAverages(self, num_averages:int):
         self.ena.write(":SENS1:AVER:COUN {}".format(int(num_averages)))
         pass
 
-    def getNumberAverages(self):
+    def getNumberAverages(self) -> int:
         self._ret_str = self.ena.query(":SENS1:AVER:COUN?")
         return int(self._ret_str)
         
     def setIFBandwidth(self, bandwidth_Hz):
         pass
 
-    def getIFBandwidth(self):
+    def getIFBandwidth(self) -> float:
         pass
 
     ''' Marker Control Methods'''
@@ -183,11 +183,11 @@ class Keysight_ENA_Eth:
     def setMarkFreq_Hz(self, N, marker_Hz):
         self.ena.write("CALCulate:MARKer{}:X {}".format(int(N), str(marker_Hz)))
 
-    def getMarkFreq_Hz(self, N):
+    def getMarkFreq_Hz(self, N) -> float:
         self._ret_str = self.ena.query("CALCulate:MARKer{}:X?".format(int(N)))
         return float(self._ret_str)
 
-    def getMarkPower(self, N):
+    def getMarkPower(self, N) -> float:
         self._ret_str = self.ena.query(":CALCulate:MARKer{}:Y?".format(int(N)))
         return float(self._ret_str)
 
