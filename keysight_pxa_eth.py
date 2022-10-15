@@ -43,9 +43,10 @@ class Keysight_PXA_Eth:
         self._ret_str = self.pxa.query(self._sent_str)
         if(self.debug):
             print("  {}".format(str(self._ret_str)))
+        return self._ret_str
     
     def open(self):
-        self.pxa = self.open_resource(self.resource_name)
+        self.pxa = self.rm.open_resource(self.resource_name)
         self.pxa.write_termination = self._termination
         self.pxa.read_termination = self._termination
         self._write("*CLS")
@@ -118,13 +119,14 @@ class Keysight_PXA_Eth:
         self._write(":SENS1:FREQ:STOP {}".format(str(stop_Hz)))
         
     def getNumberPoints(self):
-        self._ret_str = self._write(":SENS:SWE:POIN?")
+        self._ret_str = self._query(":SENS:SWE:POIN?")
+        return int(self._ret_str)
 
     def setNumberPoints(self, nPoints):
         self._write(":SENS:SWE:POIN {}".format(str(nPoints)))
 
     def getData(self, trace):
-        self._write("CALC{}:DATA? SDATA".format(str(trace)))
+        self._write(":TRACe:DATA? TRACE{}".format(str(trace)))
         self._ret_data = self._read()
         data = np.array(self._ret_data.split(',')).astype(float)
         return data
@@ -174,7 +176,7 @@ class Keysight_PXA_Eth:
         return float(self._ret_str)
 
     def getMarkPower(self, N):
-        self._ret_Str = self._query(":CALCulate:MARKer{}:Y?".format(int(N)))
+        self._ret_str = self._query(":CALCulate:MARKer{}:Y?".format(int(N)))
         return float(self._ret_str)
 
     def setCalibrateInstrument(self):

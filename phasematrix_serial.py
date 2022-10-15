@@ -31,19 +31,17 @@ class PhaseMatrix_Serial():
         self.com.close()
 
     def getIdentity(self):
-        self.IDN = self.query("*IDN?")
+        self.IDN = self._query("*IDN?")
         return(self.IDN)
 
-    def _write(self, cmd):
+    def _write(self, cmd:str):
         self._sent_str = cmd + self._term
-        self.com.write(self._sent_str)
-        self._ret_str = self.com.read_until()
-        return (self._ret_str)
+        self.com.write(self._sent_str.encode())
 
-    def _query(self, cmd):
+    def _query(self, cmd:str):
         self._sent_str = cmd + self._term
-        self.com.write(self._sent_str)
-        self._ret_str = self.serial.readline()
+        self.com.write(self._sent_str.encode())
+        self._ret_str = self.com.readline().decode("utf8")
         result = self._ret_str.split("\n")[0]
         return result
 
@@ -56,7 +54,7 @@ class PhaseMatrix_Serial():
 
     def getFrequencyGHz(self) -> float:
         ''' Get the microwave frequency.'''
-        response = self.query("FREQ?")
+        response = self._query("FREQ?")
         # Response is in mHz
         freq_GHz = float(response) / 1e9 / 1e3
         return freq_GHz
@@ -70,7 +68,7 @@ class PhaseMatrix_Serial():
 
     def getFrequencyMHz(self) -> float:
         ''' Get the microwave frequency.'''
-        response = self.query("FREQ?")
+        response = self._query("FREQ?")
         # Response is in mHz
         freq_GHz = float(response) / 1e6 / 1e3
         return freq_GHz
@@ -84,7 +82,7 @@ class PhaseMatrix_Serial():
 
     def getFrequencyHz(self) -> float:
         ''' Get the microwave frequency.'''
-        response = self.query("FREQ?")
+        response = self._query("FREQ?")
         # Response is in mHz
         freq_GHz = float(response) / 1e3
         return freq_GHz
@@ -95,7 +93,7 @@ class PhaseMatrix_Serial():
 
     def getPowerdBm(self) -> float:
         ''' Get the microwave power.'''
-        ret = self.query("POW?")
+        ret = self._query("POW?")
         pow = float(ret)
         return pow
 

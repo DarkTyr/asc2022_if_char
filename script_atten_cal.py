@@ -34,6 +34,8 @@ FREQ_INDEX_START = 1111 # Used for plotting
 rm = pyvisa.ResourceManager()
 ena = keysight_ena_eth.Keysight_ENA_Eth(rm, resource_name="TCPIP::{}::inst0::INSTR".format(ENA_IP))
 ena.open()
+ena.ena.timeout = 20000 # Set the timeout to 20 seconds, this has to be longer than the time it takes to average
+
 
 '''
 Some notes:
@@ -43,7 +45,7 @@ and configured trace 1 as the first channels and trace 2 and the seconds channel
 '''
 
 att = adaura.Adaura_4Chan_Attenuator_USB(ATTEN_COM_PORT)
-
+att.debug = False
 nSteps = int((ATTEN_STOP - ATTEN_START)/ATTEN_STEP_SIZE + 1)
 nPoints_ENA = int(ena.getNumberPoints())
 measured_attenuations_chan1 = np.zeros((nSteps,nPoints_ENA))
@@ -61,24 +63,16 @@ for i in range(nSteps):
     
 print("Complete")
 
-pl.figure()
-for i in range(nSteps):
-    pl.plot(freqs_Hz[FREQ_INDEX_START:]/1e6, measured_attenuations_chan1[i][FREQ_INDEX_START:])
-
-pl.figure()
-for i in range(nSteps):
-    pl.plot(freqs_Hz[FREQ_INDEX_START:]/1e6, measured_attenuations_chan2[i][FREQ_INDEX_START:])
-
-np.savez_compressed("cal_data/adaura_Channel1_Cal",
-                    channel=1, 
+np.savez_compressed("cal_data/adaura_Channel3_Cal",
+                    channel=3, 
                     nSteps=nSteps, 
                     nPoints_ENA=nPoints_ENA, 
                     measured_attenuations_chan=measured_attenuations_chan1, 
                     freqs_Hz=freqs_Hz, 
                     att_step_value=att_step_value)
 
-np.savez_compressed("cal_data/adaura_Channel2_Cal",
-                    channel=2, 
+np.savez_compressed("cal_data/adaura_Channel4_Cal",
+                    channel=4, 
                     nSteps=nSteps, 
                     nPoints_ENA=nPoints_ENA, 
                     measured_attenuations_chan=measured_attenuations_chan2, 
@@ -86,3 +80,11 @@ np.savez_compressed("cal_data/adaura_Channel2_Cal",
                     att_step_value=att_step_value)
                 
 
+pl.figure()
+plot_attens = [0, 20, 40, 60, 80, 100, 120, 140, 160, 180]
+for i in plot_attens:
+    pl.plot(freqs_Hz[FREQ_INDEX_START:]/1e6, measured_attenuations_chan1[i][FREQ_INDEX_START:])
+
+pl.figure()
+for i in plot_attens:
+    pl.plot(freqs_Hz[FREQ_INDEX_START:]/1e6, measured_attenuations_chan2[i][FREQ_INDEX_START:])

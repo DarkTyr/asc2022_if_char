@@ -33,7 +33,7 @@ class Keysight_ENA_Eth:
         self._ret_str = self.ena.read()
         if(self.debug):
             print("Keysight_ENA_Eth._read(): {}".format(self._sent_str))
-        return self._ret_str
+        return (self._ret_str)
 
     def _query(self, str_in:str) -> str:
         self._sent_str = str_in
@@ -43,6 +43,7 @@ class Keysight_ENA_Eth:
         self._ret_str = self.ena.query(self._sent_str)
         if(self.debug):
             print("  {}".format(str(self._ret_str)))
+        return (self._ret_str)
     
     def open(self):
         self.ena = self.rm.open_resource(self.resource_name)
@@ -111,16 +112,44 @@ class Keysight_ENA_Eth:
     def getStartFrequency_Hz(self) -> float:
         self._ret_str = self._query(":SENS:FREQ:STAR?")
         return (float(self._ret_str))
+
+    def getStartFrequency_MHz(self) -> float:
+        self._ret_str = self._query(":SENS:FREQ:STAR?")
+        return (float(self._ret_str)/1e6)
+
+    def getStartFrequency_GHz(self) -> float:
+        self._ret_str = self._query(":SENS:FREQ:STAR?")
+        return (float(self._ret_str)/1e9)
     
     def setStartFrequnecy_Hz(self, start_Hz):
         self._write(":SENS:FREQ:START {}".format(str(start_Hz)))
+
+    def setStartFrequnecy_MHz(self, start_MHz):
+        self._write(":SENS:FREQ:START {}".format(str(start_MHz*1e6)))
+
+    def setStartFrequnecy_GHz(self, start_GHz):
+        self._write(":SENS:FREQ:START {}".format(str(start_GHz*1e9)))
 
     def getStopFrequency_Hz(self) -> float:
         self._ret_str = self._query(":SENS:FREQ:STOP?")
         return(float(self._ret_str))
 
+    def getStopFrequency_MHz(self) -> float:
+        self._ret_str = self._query(":SENS:FREQ:STOP?")
+        return(float(self._ret_str)/1e6)
+
+    def getStopFrequency_Hz(self) -> float:
+        self._ret_str = self._query(":SENS:FREQ:STOP?")
+        return(float(self._ret_str)/1e9)
+
     def setStopFrequency_Hz(self, stop_Hz):
         self._write(":SENS:FREQ:STOP {}".format(str(stop_Hz)))
+        
+    def setStopFrequency_Hz(self, stop_MHz):
+        self._write(":SENS:FREQ:STOP {}".format(str(stop_MHz*1e6)))
+
+    def setStopFrequency_Hz(self, stop_GHz):
+        self._write(":SENS:FREQ:STOP {}".format(str(stop_GHz*1e9)))
         
     def getNumberPoints(self) -> int:
         self._ret_str = self._query(":SENS:SWE:POINTS?")
