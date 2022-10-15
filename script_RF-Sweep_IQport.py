@@ -96,21 +96,5 @@ np.savez_compressed("s_data/SN013L_S36_2022_10_14-1218",
 
 
 
-data_lower_band = pxa.getData(2)
-data_upper_band = pxa.getData(3)
-freq_start = pxa.getStartFrequency_Hz()
-freq_stop = pxa.getStopFrequency_Hz()
-npoints = pxa.getNumberPoints()
-power_scale = 0.5
-
-np.savez_compressed("cal_data/SN0013_Natural_Image_supression_5p5GHz_0p5scale_tone", 
-                    data_lower_band = data_lower_band,
-                    data_upper_band = data_upper_band,
-                    freq_start = freq_start,
-                    freq_stop = freq_stop,
-                    npoints = npoints,
-                    power_scale = power_scale,
-                    notes="Matches the DAC power CAL that was taken"
-                    )
 
 
