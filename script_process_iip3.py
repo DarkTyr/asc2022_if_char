@@ -85,7 +85,6 @@ for idx in range(nSteps):
     stim_atten1 += atten_cableB.real_atten_avg(marker1_freq)
     stim_atten2 += atten_cableB.real_atten_avg(marker2_freq)
 
-
     P_in1[idx] = P_TONE1_STIM_dBm + stim_atten1
     P_in2[idx] = P_TONE2_STIM_dBm + stim_atten2
 
