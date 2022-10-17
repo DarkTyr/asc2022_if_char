@@ -80,8 +80,3 @@ pl.xlabel("Frequency [MHz]")
 pl.ylabel("Output Power [dBc]")
 pl.legend()
 
-
-'''
-Baseband Loopback S11 and like responses 
-'''
-
