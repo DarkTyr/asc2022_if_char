@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from cProfile import label
 from matplotlib.pyplot import plot
 import pylab as pl
 pl.ion()
@@ -57,10 +58,10 @@ f_s22_lb = np.load(F_S22_BB_LB)
 # f_s33_lb = np.load(F_S33_BB_LB)
 # f_s44_lb = np.load(F_S33_BB_LB)
 
-freqs_s11 = f_s11_lb["freqs"]
-power_s11 = f_s11_lb["data"]
-freqs_s22 = f_s22_lb["freqs"]
-power_s22 = f_s22_lb["data"]
+freqs_s11_lb = f_s11_lb["freqs"]
+power_s11_lb = f_s11_lb["data"]
+freqs_s22_lb = f_s22_lb["freqs"]
+power_s22_lb = f_s22_lb["data"]
 # freqs_s33 = f_s33_lb["freqs"]
 # power_s33 = f_s33_lb["data"]
 # freqs_s44 = f_s44_lb["freqs"]
@@ -69,8 +70,8 @@ plot_st_idx = 10
 plot_ep_idx = np.absolute(freqs_s31-1e9).argmin()
 
 pl.figure()
-pl.plot(freqs_s11[plot_st_idx:plot_ep_idx]/1e6, power_s11[plot_st_idx:plot_ep_idx], label="s11")
-pl.plot(freqs_s22[plot_st_idx:plot_ep_idx]/1e6, power_s22[plot_st_idx:plot_ep_idx], label="s22")
+pl.plot(freqs_s11_lb[plot_st_idx:plot_ep_idx]/1e6, power_s11_lb[plot_st_idx:plot_ep_idx], label="s11")
+pl.plot(freqs_s22_lb[plot_st_idx:plot_ep_idx]/1e6, power_s22_lb[plot_st_idx:plot_ep_idx], label="s22")
 # pl.plot(freqs_s33[plot_st_idx:plot_ep_idx]/1e6, power_s33[plot_st_idx:plot_ep_idx])
 # pl.plot(freqs_s44[plot_st_idx:plot_ep_idx]/1e6, power_s44[plot_st_idx:plot_ep_idx])
 pl.title("Baseband Loopback Matching")
@@ -80,3 +81,63 @@ pl.xlabel("Frequency [MHz]")
 pl.ylabel("Output Power [dBc]")
 pl.legend()
 
+
+'''
+Baseband Loopback S11 and like responses 
+'''
+F_S11_BB_4p5 = "s_data/SN020L_S11_rf_50ohm_4p5GHz.npz"
+F_S22_BB_4p5 = "s_data/SN020L_S22_rf_50ohm_4p5GHz.npz"
+f_s11_bb_4p5 = np.load(F_S11_BB_4p5)
+f_s22_bb_4p5 = np.load(F_S22_BB_4p5)
+
+freqs_s11_4p5 = f_s11_bb_4p5["freqs"]
+power_s11_4p5 = f_s11_bb_4p5["data"]
+freqs_s22_4p5 = f_s22_bb_4p5["freqs"]
+power_s22_4p5 = f_s22_bb_4p5["data"]
+plot_st_idx = 10
+plot_ep_idx = np.absolute(freqs_s11_4p5-1e9).argmin()
+
+pl.figure()
+pl.plot(freqs_s11_4p5[plot_st_idx:plot_ep_idx]/1e6, power_s11_4p5[plot_st_idx:plot_ep_idx], label="s11")
+pl.plot(freqs_s22_4p5[plot_st_idx:plot_ep_idx]/1e6, power_s22_4p5[plot_st_idx:plot_ep_idx], label="s22")
+pl.title("Baseband Matching, Up-Mix, RF port 50 OHm terminated")
+pl.xlim(0, 1000)
+# pl.ylim(-31.0, -25.0)
+pl.xlabel("Frequency [MHz]")
+pl.ylabel("Output Power [dBc]")
+pl.legend()
+
+
+'''
+RF Snn responses vs F_LO
+'''
+
+F_S55_rf_4p5 = "s_data/SN013L_S55_rf_bbterm_4p5GHz.npz"
+F_S66_rf_4p5 = "s_data/SN013L_S66_rf_bbterm_4p5GHz.npz"
+F_S55_rf_5p5 = "s_data/SN013L_S55_rf_bbterm_5p5GHz.npz"
+F_S66_rf_5p5 = "s_data/SN013L_S66_rf_bbterm_5p5GHz.npz"
+
+f_s55_rf_4p5 = np.load(F_S55_rf_4p5)
+f_s66_rf_4p5 = np.load(F_S66_rf_4p5)
+f_s55_rf_5p5 = np.load(F_S55_rf_5p5)
+f_s66_rf_5p5 = np.load(F_S66_rf_5p5)
+
+
+freqs_s55_4p5 = f_s55_rf_4p5["freqs"]
+power_s55_4p5 = f_s55_rf_4p5["data"]
+freqs_s66_4p5 = f_s66_rf_4p5["freqs"]
+power_s66_4p5 = f_s66_rf_4p5["data"]
+freqs_s55_5p5 = f_s55_rf_5p5["freqs"]
+power_s55_5p5 = f_s55_rf_5p5["data"]
+freqs_s66_5p5 = f_s66_rf_5p5["freqs"]
+power_s66_5p5 = f_s66_rf_5p5["data"]
+
+pl.figure()
+pl.plot(freqs_s55_4p5/1e6, power_s55_4p5, label="S55_4p5 GHz")
+pl.plot(freqs_s66_4p5/1e6, power_s66_4p5, label="S66_4p5 GHz")
+pl.title("RF Snn Matching vs F_LO")
+pl.xlim(3200, 5200)
+# pl.ylim(-31.0, -25.0)
+pl.xlabel("Frequency [MHz]")
+pl.ylabel("Power [dB]")
+pl.legend()

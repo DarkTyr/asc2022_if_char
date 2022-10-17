@@ -109,7 +109,7 @@ for idx in range(nSteps):
     
 ''' First attempt at a linear fit of some sort '''
 # linear space for plugging into line fits
-x_imd3 = np.linspace(-5, 26, 100)
+x_imd3 = np.linspace(-5, 70, 100)
 # find the general gain of the circuit by looking at the 0dBm input power result
 G_idx = np.absolute(P_in1 - 1.0).argmin()
 Gain = P_out1[G_idx] - P_in1[G_idx]
@@ -163,10 +163,11 @@ pl.plot(P_in1[p_in_idx:], P_out3[p_in_idx:], label="IP3") # IMD3
 pl.plot(x_imd3, imd1, label="IP1-1:1 Line")
 pl.plot(x_imd1, imd2, label="IP2-1:2 Line")
 pl.plot(x_imd3, imd3, label="IP3-1:3 Line")
-pl.xlim(-5, 10)
-pl.ylim(-70, 20)
+# pl.xlim(-5, 65)
+pl.ylim(-65, 20)
+pl.xlim(-5, 12)
 # pl.axis('equal')
-pl.title("IIPn : SN0013")
+pl.title("IIPn DN-Mix : SN0013")
 pl.xlabel("$P_{IN}$ [dBm]")
 pl.ylabel("$P_{OUT}$ [dBm]")
 pl.legend()
